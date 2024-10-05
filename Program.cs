@@ -1,3 +1,13 @@
+using System.Text.Json.Serialization;
+using SimplyBooks.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.Json;
+using SimplyBooks.Interface;
+using SimplyBooks.Repositories;
+using SimplyBooks.Services;
+using SimplyBooks.Endpoints;
+using SimplyBooks.Mapper;
+
 
 namespace SimplyBooks
 {
@@ -10,9 +20,30 @@ namespace SimplyBooks
             // Add services to the container.
             builder.Services.AddAuthorization();
 
+            builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            // allows passing datetimes without time zone data 
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+            // allows our api endpoints to access the database through Entity Framework Core
+            builder.Services.AddNpgsql<SimplyBooksDbContext>(builder.Configuration["SimplyBooksDbConnectionString"]);
+
+            builder.Services.AddScoped<IAuthorService, AuthorService>();
+            builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+
+            // Set the JSON serializer options
+            builder.Services.Configure<JsonOptions>(options =>
+            {
+                options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+            });
+
 
             var app = builder.Build();
 
@@ -26,6 +57,8 @@ namespace SimplyBooks
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            app.MapAuthorEndpoints();
 
             app.Run();
         }

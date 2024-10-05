@@ -4,9 +4,9 @@
 
 public class SimplyBooksDbContext : DbContext
 {
-    public DbSet<Author>? Authors { get; set; }
-    public DbSet<Book>? Books { get; set; }
-    public DbSet<User>? Users { get; set; }
+    public DbSet<Author> Authors { get; set; }
+    public DbSet<Book> Books { get; set; }
+    public DbSet<User> Users { get; set; }
 
 
     public SimplyBooksDbContext(DbContextOptions<SimplyBooksDbContext> options) : base(options)
@@ -23,7 +23,6 @@ public class SimplyBooksDbContext : DbContext
             new Author { Id = 4, Email = "lukesky@faux.com", Favorite = false, FirstName = "Luke", LastName = "Skywalker", Image = "imageurl3.com", UserId = 1 },
             new Author { Id = 5, Email = "leiaorgana@faux.com", Favorite = true, FirstName = "Leia", LastName = "Organa", Image = "imageurl4.com", UserId = 2 }
             );
-
         modelBuilder.Entity<Book>().HasData(
             new Book { Id = 1, AuthorId = 1, Title = "uhhh, ah yes.", Image = "bookpictureurl.com", Price = 2.45, Sale = false, UserId = 1, Description = "A book about how to be a politely confused individual" },
             new Book { Id = 2, AuthorId = 2, Title = "The Adventures of John Doe", Image = "bookimage1.com", Price = 15.99, Sale = true, UserId = 2, Description = "Follow John Doe through a series of unexpected adventures." },
@@ -39,5 +38,11 @@ public class SimplyBooksDbContext : DbContext
             new User { Id = 1, UserName = "MrThinCrisp", Email = "notmyemail@gmail.com" },
             new User { Id = 2, UserName = "Jondoe", Email = "theRealDoghBoy@gmail.com" }
             );
+
+        modelBuilder.Entity<Author>()
+            .HasMany(a => a.Books)
+            .WithOne(b => b.Author)
+            .HasForeignKey(b => b.AuthorId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
