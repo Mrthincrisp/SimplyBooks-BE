@@ -12,5 +12,6 @@ namespace SimplyBooks.Interface
         Task<Author> CreateAuthorAsync(AuthorCreateDTO authorCreateDTO, IMapper mapper);
         Task<Author> UpdateAuthorAsync(int id, IMapper mapper, AuthorEditDTO authorEditDTO); // (argument pattern matters for other parts of the pattern)
         Task<Author> DeleteAuthorAsync(int id);
+        Task<Author> FavoriteAnAuthorAsync(int id);
     }
 }

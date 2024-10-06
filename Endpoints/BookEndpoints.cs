@@ -18,13 +18,22 @@ namespace SimplyBooks.Endpoints
 
                 if (userBook == null)
                 {
-                    return Results.NotFound("No books found");
+                    return Results.Problem("Error retrieving books for the user. Please try again, or there is an internal server error.");
                 }
+
+                if (userBook.Count == 0)
+                {
+                    return Results.NotFound("No books found for the specified user.");
+
+                }
+
                 return Results.Ok(userBook);
             })
                 .WithName("GetUserBooks")
                 .WithOpenApi()
-                .Produces<List<Author>>(StatusCodes.Status200OK);
+                .Produces<List<Book>>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status500InternalServerError);
 
             //GET a single Book
             group.MapGet("{id}", async (IBookService book, int id) =>

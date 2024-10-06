@@ -10,20 +10,6 @@ namespace SimplyBooks.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Users",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserName = table.Column<string>(type: "text", nullable: true),
-                    Email = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Users", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Authors",
                 columns: table => new
                 {
@@ -39,12 +25,20 @@ namespace SimplyBooks.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Authors", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Authors_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserName = table.Column<string>(type: "text", nullable: true),
+                    Email = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -70,21 +64,6 @@ namespace SimplyBooks.Migrations
                         principalTable: "Authors",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Books_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Email", "UserName" },
-                values: new object[,]
-                {
-                    { 1, "notmyemail@gmail.com", "MrThinCrisp" },
-                    { 2, "theRealDoghBoy@gmail.com", "Jondoe" }
                 });
 
             migrationBuilder.InsertData(
@@ -97,6 +76,15 @@ namespace SimplyBooks.Migrations
                     { 3, "janedoe@faux.com", true, "Jane", "imageurl2.com", "Doe", 1 },
                     { 4, "lukesky@faux.com", false, "Luke", "imageurl3.com", "Skywalker", 1 },
                     { 5, "leiaorgana@faux.com", true, "Leia", "imageurl4.com", "Organa", 2 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Email", "UserName" },
+                values: new object[,]
+                {
+                    { 1, "notmyemail@gmail.com", "MrThinCrisp" },
+                    { 2, "theRealDoghBoy@gmail.com", "Jondoe" }
                 });
 
             migrationBuilder.InsertData(
@@ -114,19 +102,9 @@ namespace SimplyBooks.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Authors_UserId",
-                table: "Authors",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Books_AuthorId",
                 table: "Books",
                 column: "AuthorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Books_UserId",
-                table: "Books",
-                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -135,10 +113,10 @@ namespace SimplyBooks.Migrations
                 name: "Books");
 
             migrationBuilder.DropTable(
-                name: "Authors");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Authors");
         }
     }
 }

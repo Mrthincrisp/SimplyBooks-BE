@@ -11,7 +11,6 @@
         public bool Sale { get; set; }
         public int UserId { get; set; }
         public Author? Author { get; set; }
-        public User? User { get; set; }
 
     }
 }

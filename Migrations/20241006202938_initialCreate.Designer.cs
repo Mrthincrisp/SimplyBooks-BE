@@ -11,7 +11,7 @@ using SimplyBooks;
 namespace SimplyBooks.Migrations
 {
     [DbContext(typeof(SimplyBooksDbContext))]
-    [Migration("20241005022548_initialCreate")]
+    [Migration("20241006202938_initialCreate")]
     partial class initialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,8 +50,6 @@ namespace SimplyBooks.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Authors");
 
@@ -140,8 +138,6 @@ namespace SimplyBooks.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Books");
 
@@ -258,15 +254,6 @@ namespace SimplyBooks.Migrations
                         });
                 });
 
-            modelBuilder.Entity("SimplyBooks.Models.Author", b =>
-                {
-                    b.HasOne("SimplyBooks.Models.User", null)
-                        .WithMany("Authors")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("SimplyBooks.Models.Book", b =>
                 {
                     b.HasOne("SimplyBooks.Models.Author", "Author")
@@ -275,26 +262,11 @@ namespace SimplyBooks.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SimplyBooks.Models.User", "User")
-                        .WithMany("Books")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Author");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("SimplyBooks.Models.Author", b =>
                 {
-                    b.Navigation("Books");
-                });
-
-            modelBuilder.Entity("SimplyBooks.Models.User", b =>
-                {
-                    b.Navigation("Authors");
-
                     b.Navigation("Books");
                 });
 #pragma warning restore 612, 618
