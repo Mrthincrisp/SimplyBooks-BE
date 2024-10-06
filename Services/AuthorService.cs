@@ -42,5 +42,10 @@ namespace SimplyBooks.Services
         {
             return await _authorRepo.UpdateAuthorAsync(id, mapper, authorEditDTO);
         }
+        public async Task<Author> FavoriteAnAuthorAsync(int id)
+        {
+            return await _authorRepo.FavoriteAnAuthorAsync(id);
+        }
+
     }
 }

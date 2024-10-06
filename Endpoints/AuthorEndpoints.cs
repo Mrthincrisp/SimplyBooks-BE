@@ -2,6 +2,7 @@
 using SimplyBooks.Interface;
 using AutoMapper;
 using SimplyBooks.DTOs;
+using System.ComponentModel.DataAnnotations;
 namespace SimplyBooks.Endpoints
 {
     public static class AuthorEndpoints
@@ -17,7 +18,7 @@ namespace SimplyBooks.Endpoints
 
                 if (userAuthor == null)
                 {
-                    return Results.Problem("Error retrieving authors for the user. Please try again, or there is an internal server error.", statusCode: StatusCodes.Status500InternalServerError);
+                    return Results.Problem("Error retrieving authors for the user. Please try again, or there is an internal server error.");
                 }
 
                 if (userAuthor.Count == 0)
@@ -74,7 +75,7 @@ namespace SimplyBooks.Endpoints
                     return Results.NotFound("No author found");
                 }
 
-                return Results.Ok("Author deleted.");
+                return Results.Ok("Author, and related books deleted.");
             })
             .WithName("Delete Author")
             .WithOpenApi()
@@ -83,6 +84,17 @@ namespace SimplyBooks.Endpoints
             // Edit(PUT) an Author
             group.MapPut("/{id}", async (IAuthorService iAuthor, int id, IMapper mapper, AuthorEditDTO authorEditDTO) =>
             {
+
+                // Validate the DTO
+                var validationResults = new List<ValidationResult>(); // creates empty list to place potential error list
+                var validationContext = new ValidationContext(authorEditDTO); // grabrs required keys from DTO to compare in next line
+                bool isValid = Validator.TryValidateObject(authorEditDTO, validationContext, validationResults, true); //compares data to DTO, failures send errors to results list
+
+                if (!isValid)
+                {
+                    return Results.BadRequest(validationResults.Select(v => v.ErrorMessage)); // returns the reult list to the user
+                }
+
                 var authorUpdate = await iAuthor.UpdateAuthorAsync(id, mapper, authorEditDTO);
 
                 if (authorUpdate == null)
@@ -92,11 +104,12 @@ namespace SimplyBooks.Endpoints
                 }
 
 
-                return Results.Created($"/authors/{authorUpdate.Id}", authorUpdate);
+                return Results.Created($"/author/{authorUpdate.Id}", authorUpdate);
             })
             .WithName("UpdateAuthor")
             .WithOpenApi()
             .Produces<Author>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status204NoContent);
 
             // POST an Author
@@ -116,6 +129,23 @@ namespace SimplyBooks.Endpoints
             .WithName("CreateAuthor")
             .WithOpenApi()
             .Produces<Author>(StatusCodes.Status201Created)
+            .Produces(StatusCodes.Status400BadRequest);
+
+            //PATCH an author's favorite status
+            group.MapPatch("/favorite/{id}", async (IAuthorService author, int id) =>
+            {
+                var editedAuthor = await author.FavoriteAnAuthorAsync(id);
+
+                if (editedAuthor == null)
+                {
+                    return Results.BadRequest("No author found");
+                }
+
+                return Results.Created($"/favorite/{id}", editedAuthor);
+            })
+            .WithName("FavoriteAuthor")
+            .WithOpenApi()
+            .Produces<Author>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest);
         }
     }

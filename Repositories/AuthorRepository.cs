@@ -87,5 +87,20 @@ namespace SimplyBooks.Repositories
             await _context.SaveChangesAsync();
             return author;
         }
+        public async Task<Author> FavoriteAnAuthorAsync(int id)
+        {
+            var existingAuthor = await _context.Authors.FindAsync(id);
+
+            if (existingAuthor == null)
+            {
+                return null;
+            }
+
+            existingAuthor.Favorite = !existingAuthor.Favorite;
+
+            await _context.SaveChangesAsync();
+            return existingAuthor;
+
+        }
     }
 }
