@@ -9,6 +9,8 @@ namespace SimplyBooks.Mapper
         {
             CreateMap<Author, AuthorEditDTO>().ReverseMap();
             CreateMap<Author, AuthorCreateDTO>().ReverseMap();
+            CreateMap<Book, BookEditDTO>().ReverseMap();
+            CreateMap<Book, BookCreateDTO>().ReverseMap();
         }
     }
 }
