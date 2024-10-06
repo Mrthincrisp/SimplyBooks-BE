@@ -1,6 +1,4 @@
 using System.Text.Json.Serialization;
-using SimplyBooks.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http.Json;
 using SimplyBooks.Interface;
 using SimplyBooks.Repositories;
@@ -37,6 +35,8 @@ namespace SimplyBooks
 
             builder.Services.AddScoped<IAuthorService, AuthorService>();
             builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+            builder.Services.AddScoped<IBookRepository, BookRepository>();
+            builder.Services.AddScoped<IBookService, BookService> ();
 
             // Set the JSON serializer options
             builder.Services.Configure<JsonOptions>(options =>
@@ -59,6 +59,7 @@ namespace SimplyBooks
             app.UseAuthorization();
 
             app.MapAuthorEndpoints();
+            app.MapBookEndpoints();
 
             app.Run();
         }

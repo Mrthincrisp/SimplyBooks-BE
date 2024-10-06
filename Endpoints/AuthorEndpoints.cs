@@ -6,25 +6,32 @@ namespace SimplyBooks.Endpoints
 {
     public static class AuthorEndpoints
     {
-        public static async void MapAuthorEndpoints(this IEndpointRouteBuilder routes)
+        public static void MapAuthorEndpoints(this IEndpointRouteBuilder routes)
         {
-            var group = routes.MapGroup("/api/Author").WithTags(nameof(Author));
+            var group = routes.MapGroup("/api/author").WithTags(nameof(Author));
             
             //GET a user's authors
-            group.MapGet("/User/{id}", async (IAuthorService author, int id) =>
-            {
+            group.MapGet("/user/{id}", async (IAuthorService author, int id) =>
+            {   
                 var userAuthor = await author.GetAuthorByUserAsync(id);
 
                 if (userAuthor == null)
                 {
-                    return Results.NotFound("No authors found");
+                    return Results.Problem("Error retrieving authors for the user. Please try again, or there is an internal server error.", statusCode: StatusCodes.Status500InternalServerError);
+                }
+
+                if (userAuthor.Count == 0)
+                {
+                    return Results.NotFound("No authors found for the specified user.");
                 }
 
                 return Results.Ok(userAuthor);
             })
                 .WithName("GetUserAuthors")
                 .WithOpenApi()
-                .Produces<List<Author>>(StatusCodes.Status200OK);
+                .Produces<List<Author>>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status404NotFound)
+                .Produces(StatusCodes.Status500InternalServerError);
 
             //GET a single Author
             group.MapGet("/{id}", async (IAuthorService author, int id) =>
@@ -41,6 +48,21 @@ namespace SimplyBooks.Endpoints
             .WithName("Author")
             .WithOpenApi()
             .Produces<Author>(StatusCodes.Status200OK);
+
+            //GET a users favorite author
+            group.MapGet("/favorite/{id}", async (IAuthorService author, int id) =>
+            {
+                var favoriteAuthor = await author.GetUserFavoriteAuthorAsync(id);
+                if (favoriteAuthor == null)
+                {
+                    return Results.NotFound("No athours found");
+                }
+
+                return Results.Ok(favoriteAuthor);
+            })
+            .WithName("FavoriteAuthors")
+            .WithOpenApi()
+            .Produces<List<Author>>(StatusCodes.Status200OK);
 
             //DELETE an Author
             group.MapDelete("/{id}", async (IAuthorService author, int id) =>

@@ -15,9 +15,14 @@ namespace SimplyBooks.Repositories
         }
         public async Task<List<Author>> GetAuthorByUserAsync(int id)
         {
-            return await _context.Authors
+            var authors =  await _context.Authors
                 .Where(a=> a.UserId == id)
                 .ToListAsync();
+            if (authors == null)
+            {
+                return null;
+            }
+            return authors;
         }
         public async Task<Author> GetAuthorByIdAsync(int id)
         {
@@ -29,6 +34,12 @@ namespace SimplyBooks.Repositories
             }
 
             return author;
+        }
+        public async Task<List<Author>> GetUserFavoriteAuthorAsync(int id)
+        {
+           return await _context.Authors
+                .Where(a => a.UserId == id && a.Favorite == true)
+                .ToListAsync();
         }
         public async Task<Author> CreateAuthorAsync(AuthorCreateDTO authorCreateDTO, IMapper mapper)
         {

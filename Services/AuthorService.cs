@@ -18,6 +18,11 @@ namespace SimplyBooks.Services
             return await _authorRepo.CreateAuthorAsync(authorCreateDTO, mapper);
         }
 
+        public async Task<List<Author>> GetUserFavoriteAuthorAsync(int id)
+        {
+            return await _authorRepo.GetUserFavoriteAuthorAsync(id);
+        } 
+
         public async Task<Author> DeleteAuthorAsync(int id)
         {
             return await _authorRepo.DeleteAuthorAsync(id);
